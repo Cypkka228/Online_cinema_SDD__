@@ -1,14 +1,12 @@
 ﻿import os
-from flask import request, render_template, url_for, redirect, flash, jsonify, abort
-from werkzeug.utils import secure_filename
-from flask_login import login_user, logout_user, login_required, current_user
-from sqlalchemy import text  # Обязательный импорт
+from flask import render_template, url_for, redirect, flash, jsonify, abort, request
+from flask_login import login_user, logout_user, current_user
 
+# Импортируем из текущего пакета
 from . import app, db
 from .models import Category, Movie, User, Comment
-from .forms import CategoryForm, MovieForm, MovieUpdateForm, UserLoginForm, UserRegisterForm, CommentForm
-
-STATIC_ROOT = os.path.join('app', 'static')
+from .forms import (CategoryForm, MovieForm, MovieUpdateForm, 
+                    UserLoginForm, UserRegisterForm, CommentForm)
 
 # ========== ПУБЛИЧНЫЕ ==========
 def index():
@@ -72,29 +70,71 @@ def user_logout():
     return redirect(url_for('index'))
 
 # ========== АДМИНКА ==========
-# Сюда вставлены ваши функции admin_..., просто добавьте проверку доступа:
-def admin_movie_list():
+def check_admin():
     if not current_user.is_authenticated or not getattr(current_user, 'is_admin', False):
         abort(403)
+
+def admin_movie_list():
+    check_admin()
     return render_template('admin/movie_list.html', movies=Movie.query.all())
 
-# (Остальные ваши admin_... функции вставьте здесь аналогично)
-
-# ========== ВРЕМЕННЫЕ ФУНКЦИИ (УДАЛИТЬ ПОСЛЕ НАСТРОЙКИ) ==========
-
-@app.before_request
-def fix_database_column():
-    try:
-        db.session.execute(text('ALTER TABLE "user" ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;'))
+def admin_movie_create():
+    check_admin()
+    form = MovieForm()
+    if form.validate_on_submit():
+        movie = Movie(name=form.name.data, description=form.description.data, 
+                      year=form.year.data, country=form.country.data, 
+                      director=form.director.data, image=form.image.data)
+        db.session.add(movie)
         db.session.commit()
-    except:
-        db.session.rollback()
+        flash('Фильм создан!', 'success')
+        return redirect(url_for('admin_movie_list'))
+    return render_template('admin/movie_create.html', form=form)
 
-@app.route('/set_me_admin')
-def set_me_admin():
-    user = User.query.filter_by(username='anton').first() 
-    if user:
-        user.is_admin = True
+def admin_category_list():
+    check_admin()
+    return render_template('admin/category_list.html', categories=Category.query.all())
+
+def admin_category_create():
+    check_admin()
+    form = CategoryForm()
+    if form.validate_on_submit():
+        db.session.add(Category(name=form.name.data))
         db.session.commit()
-        return "Готово! Теперь вы администратор."
-    return "Пользователь 'anton' не найден."
+        flash('Категория создана!', 'success')
+        return redirect(url_for('admin_category_list'))
+    return render_template('admin/category_create.html', form=form)
+
+def admin_category_update(category_id):
+    check_admin()
+    category = Category.query.get_or_404(category_id)
+    form = CategoryForm(obj=category)
+    if form.validate_on_submit():
+        category.name = form.name.data
+        db.session.commit()
+        return redirect(url_for('admin_category_list'))
+    return render_template('admin/category_update.html', form=form)
+
+def admin_category_delete(category_id):
+    check_admin()
+    db.session.delete(Category.query.get_or_404(category_id))
+    db.session.commit()
+    return redirect(url_for('admin_category_list'))
+
+def admin_movie_update(movie_id):
+    check_admin()
+    movie = Movie.query.get_or_404(movie_id)
+    form = MovieUpdateForm(obj=movie)
+    if form.validate_on_submit():
+        movie.name = form.name.data
+        movie.description = form.description.data
+        movie.year = form.year.data
+        db.session.commit()
+        return redirect(url_for('admin_movie_list'))
+    return render_template('admin/movie_update.html', form=form)
+
+def admin_movie_delete(movie_id):
+    check_admin()
+    db.session.delete(Movie.query.get_or_404(movie_id))
+    db.session.commit()
+    return redirect(url_for('admin_movie_list'))
