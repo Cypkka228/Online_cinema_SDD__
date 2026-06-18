@@ -38,7 +38,7 @@ a { color: inherit; text-decoration: none; }
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(13,13,15,0.92);
+  background: rgba(13,13,15,0.96);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   height: var(--header-h);
@@ -101,7 +101,6 @@ a { color: inherit; text-decoration: none; }
 .search-form {
   display: flex;
   align-items: center;
-  gap: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -131,8 +130,95 @@ a { color: inherit; text-decoration: none; }
   transition: background .2s;
 }
 .search-form button[type="submit"]:hover { background: #c1121f; }
-/* hide virtual keyboard button */
-#virtualKeyboardBtn { display: none; }
+
+/* ========== BURGER BUTTON ========== */
+.burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.burger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all .3s;
+}
+.burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.burger.open span:nth-child(2) { opacity: 0; }
+.burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile dropdown menu */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  background: rgba(13,13,15,0.98);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  z-index: 99;
+  padding: 16px 20px 24px;
+  flex-direction: column;
+  gap: 4px;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu a {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: color .2s, background .2s;
+}
+.mobile-menu a:hover, .mobile-menu a:active {
+  color: var(--text);
+  background: var(--surface);
+}
+.mobile-menu a.logout-btn {
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  text-align: center;
+  margin-top: 8px;
+}
+.mobile-menu .mobile-search {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.mobile-menu .mobile-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 14px;
+}
+.mobile-menu .mobile-search button {
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  padding: 11px 18px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
 
 /* ========== CATEGORY BAR ========== */
 .categories-bar {
@@ -147,6 +233,7 @@ a { color: inherit; text-decoration: none; }
   gap: 4px;
   overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 .categories-container::-webkit-scrollbar { display: none; }
 
@@ -173,6 +260,7 @@ a { color: inherit; text-decoration: none; }
   padding: 12px 24px;
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 .sort-btn {
   background: var(--card);
@@ -237,16 +325,20 @@ a { color: inherit; text-decoration: none; }
 }
 
 .video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
   background: #000;
   border-radius: var(--radius);
-  overflow: hidden;
   box-shadow: 0 20px 60px rgba(0,0,0,.8);
   margin-bottom: 28px;
 }
-.video-wrapper video {
-  width: 100%;
-  max-height: 600px;
-  display: block;
+.video-wrapper iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
 }
 
 .movie-info h1 {
@@ -259,6 +351,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   gap: 16px;
   margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 .movie-meta span {
   background: var(--surface);
@@ -317,10 +410,7 @@ a { color: inherit; text-decoration: none; }
 }
 .comment-submit-btn:hover { background: #c1121f; }
 
-.login-to-comment {
-  color: var(--muted);
-  margin-bottom: 20px;
-}
+.login-to-comment { color: var(--muted); margin-bottom: 20px; }
 .login-to-comment a { color: var(--accent); text-decoration: underline; }
 
 .comments-list { display: flex; flex-direction: column; gap: 16px; }
@@ -335,6 +425,7 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   gap: 12px;
   margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 .comment-author { font-weight: 700; color: var(--accent2); }
 .comment-date { font-size: 12px; color: var(--muted); }
@@ -350,7 +441,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 18px;
 }
 
-/* ========== STATIC PAGES (about, rules etc) ========== */
+/* ========== STATIC PAGES ========== */
 .static-page {
   max-width: 800px;
   margin: 48px auto;
@@ -507,7 +598,7 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600;
 }
 .flash-success { background: #1a3a2a; border: 1px solid #2d7a50; color: #4ade80; }
-.flash-error { background: #3a1a1a; border: 1px solid #7a2d2d; color: #f87171; }
+.flash-error   { background: #3a1a1a; border: 1px solid #7a2d2d; color: #f87171; }
 .flash-warning { background: #3a2e1a; border: 1px solid #7a6a2d; color: #fbbf24; }
 
 /* ========== FOOTER ========== */
@@ -528,11 +619,7 @@ a { color: inherit; text-decoration: none; }
 }
 .footer-copyright { color: var(--muted); font-size: 13px; }
 .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
-.footer-links a {
-  color: var(--muted);
-  font-size: 13px;
-  transition: color .2s;
-}
+.footer-links a { color: var(--muted); font-size: 13px; transition: color .2s; }
 .footer-links a:hover { color: var(--text); }
 
 .about-text {
@@ -563,31 +650,61 @@ a { color: inherit; text-decoration: none; }
   margin-top: 4px;
 }
 
-/* ========== RESPONSIVE ========== */
-@media (max-width: 768px) {
-  .header-container { gap: 12px; }
-  .logo-subtitle { display: none; }
-  .main-nav a { padding: 6px 8px; font-size: 12px; }
-  .search-form { min-width: 140px; }
+/* ========================================
+   RESPONSIVE — MOBILE
+   ======================================== */
+
+/* Планшет */
+@media (max-width: 900px) {
+  .search-form { min-width: 160px; }
   .movie-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 12px;
-    padding: 8px 12px 32px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
   }
-  .player-container { padding: 0 12px 40px; }
-  .movie-info h1 { font-size: 28px; }
 }
 
-.video-wrapper {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 */
-    height: 0;
-    overflow: hidden;
-}
-.video-wrapper iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+/* Мобильный */
+@media (max-width: 640px) {
+  :root { --header-h: 56px; }
+
+  /* Header: логотип + бургер, поиск убираем */
+  .header-container { padding: 0 16px; gap: 0; }
+  .logo-subtitle { display: none; }
+  .search-form { display: none; }   /* прячем — он внутри мобильного меню */
+  .main-nav { display: none; }      /* прячем — он внутри мобильного меню */
+  .burger { display: flex; }
+
+  /* Сетка карточек: 2 колонки */
+  .movie-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 8px 12px 32px;
+  }
+  .movie-title { font-size: 12px; padding: 8px 8px; }
+
+  /* Категории — мельче */
+  .category-btn { font-size: 13px; padding: 12px 12px; }
+  .sort-bar { padding: 10px 12px; }
+
+  /* Плеер */
+  .player-container { padding: 0 12px 32px; margin-top: 16px; }
+  .movie-info h1 { font-size: 26px; }
+  .movie-description { font-size: 14px; }
+
+  /* Комментарии */
+  .comment-item { padding: 12px 14px; }
+  .comments-section { margin-top: 28px; }
+
+  /* Auth */
+  .auth-box { padding: 28px 20px; }
+  .auth-wrapper { padding: 24px 16px; }
+
+  /* Admin таблица — скролл по горизонтали */
+  .admin-container { padding: 0 12px 40px; }
+  .admin-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* Footer */
+  .footer-content { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .footer-links { gap: 12px; }
+  .about-text { display: none; } /* убираем SEO-текст на мобилке */
 }
