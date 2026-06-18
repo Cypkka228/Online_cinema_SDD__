@@ -32,11 +32,14 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(60), unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
-    is_admin = db.Column(db.Boolean, default=False, nullable=False)  # ← НОВОЕ
+    
+    # ВСТАВЛЯЕМ ЭТУ СТРОКУ СЮДА:
+    is_admin = db.Column(db.Boolean, default=False, nullable=True)
 
     @property
     def password(self):
         return self.password_hash
+    # ... (дальше ваш код остается без изменений)
 
     @password.setter
     def password(self, new_password):
