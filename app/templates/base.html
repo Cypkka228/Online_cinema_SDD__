@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SanDaDan{% endblock %} | Кино онлайн</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fanfilm4k.css') }}">
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+    <div class="header-container">
+        <div class="logo">
+            <a href="{{ url_for('index') }}">SanDaDan</a>
+            <span class="logo-subtitle">кино и сериалы</span>
+        </div>
+
+        <!-- Десктопная навигация -->
+        <nav class="main-nav">
+            <a href="{{ url_for('index') }}">Главная</a>
+            {% if current_user.is_authenticated and current_user.is_admin %}
+                <a href="{{ url_for('admin_movie_list') }}">Панель</a>
+                <a href="{{ url_for('admin_movie_create') }}">+ Фильм</a>
+            {% endif %}
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('user_logout') }}" class="logout-btn">Выйти ({{ current_user.username }})</a>
+            {% else %}
+                <a href="{{ url_for('user_login') }}">Войти</a>
+                <a href="{{ url_for('user_register') }}">Регистрация</a>
+            {% endif %}
+        </nav>
+
+        <!-- Десктопный поиск -->
+        <form class="search-form" action="{{ url_for('movie_search') }}" method="GET">
+            <input type="text" name="search" placeholder="Поиск фильмов...">
+            <button type="submit">Найти</button>
+        </form>
+
+        <!-- Бургер (только мобилка) -->
+        <button class="burger" id="burgerBtn" aria-label="Меню">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+</header>
+
+<!-- Мобильное меню -->
+<nav class="mobile-menu" id="mobileMenu">
+    <!-- Поиск внутри меню -->
+    <form class="mobile-search" action="{{ url_for('movie_search') }}" method="GET">
+        <input type="text" name="search" placeholder="Поиск фильмов...">
+        <button type="submit">Найти</button>
+    </form>
+
+    <a href="{{ url_for('index') }}">Главная</a>
+    {% if current_user.is_authenticated and current_user.is_admin %}
+        <a href="{{ url_for('admin_movie_list') }}">Панель управления</a>
+        <a href="{{ url_for('admin_movie_create') }}">+ Добавить фильм</a>
+    {% endif %}
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('user_logout') }}" class="logout-btn">Выйти ({{ current_user.username }})</a>
+    {% else %}
+        <a href="{{ url_for('user_login') }}">Войти</a>
+        <a href="{{ url_for('user_register') }}">Регистрация</a>
+    {% endif %}
+</nav>
+
+<!-- ===== FLASH MESSAGES ===== -->
+{% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        <div class="flashes">
+            {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+{% block categories %}{% endblock %}
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-copyright">&copy; 2025 SanDaDan | Кино в хорошем качестве</div>
+        <div class="footer-links">
+            <a href="{{ url_for('about') }}">О проекте</a>
+            <a href="{{ url_for('dmca') }}">Правообладателям</a>
+            <a href="{{ url_for('contacts') }}">Контакты</a>
+            <a href="{{ url_for('rules') }}">Правила</a>
+        </div>
+    </div>
+    <div class="about-text">
+        <h3>SanDaDan — Онлайн кинотеатр в HD качестве!</h3>
+        <p>SanDaDan объединяет всё, что нужно для настоящих киноманов. Фильмы и сериалы разных жанров: комедии, драмы, боевики, фэнтези, аниме, ужасы и многое другое. Full HD до 4K UHD, регулярное добавление премьер.</p>
+        <p>Быстрая загрузка контента и удобный поиск делают просмотр настоящим удовольствием. Открывайте новые фильмы и наслаждайтесь просмотром прямо сейчас!</p>
+    </div>
+</footer>
+
+<script>
+const burger = document.getElementById('burgerBtn');
+const menu = document.getElementById('mobileMenu');
+burger.addEventListener('click', () => {
+    burger.classList.toggle('open');
+    menu.classList.toggle('open');
+});
+// Закрываем меню при клике на ссылку
+menu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        burger.classList.remove('open');
+        menu.classList.remove('open');
+    });
+});
+</script>
+
+</body>
+</html>

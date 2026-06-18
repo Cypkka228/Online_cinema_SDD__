@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.name }}{% endblock %}
+
+{% block content %}
+<div class="player-container">
+    <div class="video-wrapper">
+        {{ movie.video | safe }}
+    </div>
+
+    <div class="movie-info">
+        <h1>{{ movie.name }}</h1>
+        <div class="movie-meta">
+            {% if movie.year %}<span>{{ movie.year }} год</span>{% endif %}
+            {% if movie.category %}<span>{{ movie.category.name }}</span>{% endif %}
+        </div>
+        <p class="movie-description">{{ movie.description }}</p>
+    </div>
+
+    <div class="comments-section">
+        <h3>Комментарии ({{ comments | length }})</h3>
+
+        {% if current_user.is_authenticated %}
+            <form method="POST" class="comment-form">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.text(class="comment-input", placeholder="Напишите ваш комментарий...", rows="3") }}
+                    {% for error in form.text.errors %}
+                        <div class="errors"><span>{{ error }}</span></div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="comment-submit-btn">Отправить</button>
+            </form>
+        {% else %}
+            <p class="login-to-comment">
+                <a href="{{ url_for('user_login') }}">Войдите</a>, чтобы оставить комментарий.
+            </p>
+        {% endif %}
+
+        <div class="comments-list">
+            {% for comment in comments %}
+                <div class="comment-item">
+                    <div class="comment-header">
+                        <strong class="comment-author">{{ comment.user.username }}</strong>
+                        <span class="comment-date">{{ comment.created_at.strftime('%d.%m.%Y в %H:%M') }}</span>
+                    </div>
+                    <div class="comment-text">{{ comment.text }}</div>
+                </div>
+            {% else %}
+                <p class="no-comments">Пока нет комментариев. Будьте первым!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

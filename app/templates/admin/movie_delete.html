@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Удалить фильм{% endblock %}
+{% block content %}
+<div class="admin-container">
+    <h1>Удалить фильм</h1>
+    <p style="color:var(--muted); margin-bottom:24px;">Вы уверены, что хотите удалить фильм <strong style="color:var(--accent)">{{ movie.name }}</strong>?</p>
+    <form method="POST">
+        <button type="submit" class="btn-sm btn-delete" style="padding:10px 24px; font-size:14px;">Да, удалить</button>
+        <a href="{{ url_for('admin_movie_list') }}" style="margin-left:12px; color:var(--muted);">Отмена</a>
+    </form>
+</div>
+{% endblock %}

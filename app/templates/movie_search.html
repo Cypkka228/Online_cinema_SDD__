@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Поиск{% endblock %}
+
+{% block content %}
+<div class="movie-grid">
+    {% for movie in movie_list %}
+    <a href="{{ url_for('movie_detail', movie_id=movie.id) }}">
+        <div class="movie-card">
+            <img src="{{ url_for('static', filename=movie.image) }}"
+                 alt="{{ movie.name }}"
+                 class="movie-poster"
+                 loading="lazy">
+            <div class="movie-title">{{ movie.name }}</div>
+        </div>
+    </a>
+    {% else %}
+    <div class="search-empty">Ничего не найдено 😕</div>
+    {% endfor %}
+</div>
+{% endblock %}

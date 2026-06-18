@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Список категорий{% endblock %}
+{% block content %}
+<div class="admin-container">
+    <h1>Категории</h1>
+    <a href="{{ url_for('admin_category_create') }}" class="btn-add">+ Добавить категорию</a>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in category_list %}
+            <tr>
+                <td>{{ category.id }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                    <a href="{{ url_for('admin_category_update', category_id=category.id) }}" class="btn-sm btn-edit">Изменить</a>
+                    <a href="{{ url_for('admin_category_delete', category_id=category.id) }}" class="btn-sm btn-delete">Удалить</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="color:var(--muted); text-align:center;">Нет категорий</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

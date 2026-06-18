@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <h1>{{ title }}</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.slug.label }}
+            {{ form.slug(class="form-control") }}
+            <small>Оставьте пустым – будет сгенерирован автоматически</small>
+        </div>
+
+        <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description(class="form-control", rows="5") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.year.label }}
+            {{ form.year(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.category_id.label }}
+            {{ form.category_id(class="form-control") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.image.label }}
+            {{ form.image(class="form-control-file") }}
+            {% if title == "Редактировать фильм" %}
+                <small>Оставьте пустым, если не хотите менять постер</small>
+            {% else %}
+                <small>Загрузите постер (jpg, png, gif)</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.video.label }}
+            {{ form.video(class="form-control", placeholder='<iframe src="https://kinescope.io/embed/VIDEO_ID" ...></iframe>') }}
+            <small>Вставьте полный iframe-код из личного кабинета Kinescope.</small>
+        </div>
+
+        <button type="submit" class="btn-primary">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

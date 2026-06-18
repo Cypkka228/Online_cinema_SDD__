@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Смотреть фильмы онлайн{% endblock %}
+
+{% block categories %}
+<!-- КАТЕГОРИИ -->
+<div class="categories-bar">
+    <div class="categories-container">
+        <button class="category-btn active" data-category="all">НОВИНКИ</button>
+        <button class="category-btn" data-category="Фильмы">ФИЛЬМЫ</button>
+        <button class="category-btn" data-category="Сериалы">СЕРИАЛЫ</button>
+        <button class="category-btn" data-category="4K UHD">4K UHD</button>
+        <button class="category-btn" data-category="Мультфильмы">МУЛЬТФИЛЬМЫ</button>
+        <button class="category-btn" data-category="Аниме">АНИМЕ</button>
+        <button class="category-btn" data-category="Докофильмы">ДОКОФИЛЬМЫ</button>
+    </div>
+</div>
+
+<!-- СОРТИРОВКА -->
+<div class="sort-bar">
+    <button class="sort-btn active" data-sort="default">ПО УМОЛЧАНИЮ</button>
+    <button class="sort-btn" data-sort="year">ПО ГОДАМ</button>
+    <button class="sort-btn" data-sort="name">ПО НАЗВАНИЮ</button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="movie-grid" id="movie-grid">
+    {% for movie in movies %}
+    <a href="{{ url_for('movie_detail', movie_id=movie.id) }}">
+        <div class="movie-card">
+            <img src="{{ url_for('static', filename=movie.image) }}"
+                 alt="{{ movie.name }}"
+                 class="movie-poster"
+                 loading="lazy">
+            <div class="movie-title">{{ movie.name }}</div>
+        </div>
+    </a>
+    {% else %}
+    <div class="search-empty">Фильмов пока нет. <a href="{{ url_for('admin_movie_create') }}" style="color:var(--accent)">Добавить первый</a></div>
+    {% endfor %}
+</div>
+
+<script>
+// Данные из сервера для фильтрации/сортировки
+const MOVIES_DATA = [
+    {% for movie in movies %}
+    {
+        id: {{ movie.id }},
+        name: {{ movie.name | tojson }},
+        year: {{ movie.year or 0 }},
+        image: {{ movie.image | tojson }},
+        category: {{ (movie.category.name if movie.category else '') | tojson }}
+    },
+    {% endfor %}
+];
+
+let currentCategory = 'all';
+let currentSort = 'default';
+
+function renderGrid(movies) {
+    const grid = document.getElementById('movie-grid');
+    if (!movies.length) {
+        grid.innerHTML = '<div class="search-empty">Фильмов не найдено</div>';
+        return;
+    }
+    grid.innerHTML = movies.map(m => `
+        <a href="/movie/${m.id}">
+            <div class="movie-card">
+                <img src="/static/${m.image}" alt="${m.name}" class="movie-poster" loading="lazy">
+                <div class="movie-title">${m.name}</div>
+            </div>
+        </a>
+    `).join('');
+}
+
+function applyFilters() {
+    let result = [...MOVIES_DATA];
+
+    if (currentCategory !== 'all') {
+        result = result.filter(m => m.category === currentCategory);
+    }
+
+    if (currentSort === 'year') {
+        result.sort((a, b) => b.year - a.year);
+    } else if (currentSort === 'name') {
+        result.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+    }
+
+    renderGrid(result);
+}
+
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentCategory = this.dataset.category;
+        applyFilters();
+    });
+});
+
+document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentSort = this.dataset.sort;
+        applyFilters();
+    });
+});
+</script>
+{% endblock %}
