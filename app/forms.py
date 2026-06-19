@@ -47,3 +47,9 @@ class UserLoginForm(FlaskForm):
 
 class CommentForm(FlaskForm):
     text = TextAreaField('Комментарий', validators=[DataRequired(), Length(min=2, max=1000)])
+
+# В файле forms.py
+class CategoryForm(FlaskForm):
+    name = StringField('Название', validators=[DataRequired(), Length(max=60)])
+    slug = StringField('Slug (ссылка)', validators=[Length(max=60)]) # Добавьте это поле
+    description = StringField('Описание', validators=[Length(max=255)])
