@@ -9,6 +9,7 @@
     <form method="POST" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
 
+        {# Поле name есть во всех формах, его можно оставить без условия #}
         <div class="form-group">
             {{ form.name.label }}
             {{ form.name(class="form-control") }}
@@ -45,7 +46,11 @@
         <div class="form-group">
             {{ form.image.label }}
             {{ form.image(class="form-control-file") }}
-            <small>Загрузите постер (jpg, png, gif)</small>
+            {% if title == "Редактировать фильм" %}
+                <small>Оставьте пустым, если не хотите менять постер</small>
+            {% else %}
+                <small>Загрузите постер (jpg, png, gif)</small>
+            {% endif %}
         </div>
         {% endif %}
 
@@ -53,6 +58,7 @@
         <div class="form-group">
             {{ form.video.label }}
             {{ form.video(class="form-control", placeholder='<iframe src="https://kinescope.io/embed/VIDEO_ID" ...></iframe>') }}
+            <small>Вставьте полный iframe-код из личного кабинета Kinescope.</small>
         </div>
         {% endif %}
 
