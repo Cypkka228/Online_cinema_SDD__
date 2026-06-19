@@ -22,8 +22,8 @@ class Movie(db.Model):
     year = db.Column(db.Integer)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id', ondelete='SET NULL'), nullable=True)
     category = db.relationship('Category', backref=db.backref('movies', lazy='dynamic'))
-    image = db.Column(db.String(255))
-    video = db.Column(db.String(255))
+    image = db.Column(db.String(600))
+    video = db.Column(db.Text)
     trailer_id = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
