@@ -1,4 +1,6 @@
 import os
+import sys
+import traceback
 from app import app, db
 from app import views
 
@@ -32,25 +34,50 @@ def create_admin(username, password):
         if not existing.is_admin:
             existing.is_admin = True
             db.session.commit()
-            print(f"Пользователь '{username}' повышен до администратора.")
+            print(f"Пользователь '{username}' повышен до администратора.", flush=True)
         else:
-            print(f"Администратор '{username}' уже существует.")
+            print(f"Администратор '{username}' уже существует.", flush=True)
         return
     admin = User(username=username, is_admin=True)
     admin.password = password
     db.session.add(admin)
     db.session.commit()
-    print(f"Администратор '{username}' создан!")
+    print(f"Администратор '{username}' создан!", flush=True)
 
 
-# ========== ЗАПУСК ==========
-if __name__ == '__main__':
+# ========== ВРЕМЕННЫЙ ЭНДПОИНТ ДЛЯ РУЧНОЙ ИНИЦИАЛИЗАЦИИ БД ==========
+@app.route('/_setup_db_xk29')
+def setup_db_route():
+    try:
+        db.create_all()
+        admin_username = os.environ.get('ADMIN_USERNAME')
+        admin_password = os.environ.get('ADMIN_PASSWORD')
+        msg = "Таблицы созданы. "
+        if admin_username and admin_password:
+            create_admin(admin_username, admin_password)
+            msg += f"Админ '{admin_username}' настроен."
+        else:
+            msg += "ADMIN_USERNAME/ADMIN_PASSWORD не заданы."
+        return msg
+    except Exception as e:
+        return f"ОШИБКА: {e}\n\n{traceback.format_exc()}", 500
+
+
+# ========== ИНИЦИАЛИЗАЦИЯ БД И АДМИНА ПРИ СТАРТЕ ==========
+try:
     with app.app_context():
         db.create_all()
+        print("db.create_all() выполнен успешно.", flush=True)
         admin_username = os.environ.get('ADMIN_USERNAME')
         admin_password = os.environ.get('ADMIN_PASSWORD')
         if admin_username and admin_password:
             create_admin(admin_username, admin_password)
         else:
-            print("Задайте ADMIN_USERNAME и ADMIN_PASSWORD в переменных окружения!")
+            print("Задайте ADMIN_USERNAME и ADMIN_PASSWORD в переменных окружения, чтобы создать администратора!", flush=True)
+except Exception as e:
+    print(f"ОШИБКА ПРИ ИНИЦИАЛИЗАЦИИ БД: {e}", flush=True)
+    traceback.print_exc()
+
+# ========== ЗАПУСК (только для локальной разработки) ==========
+if __name__ == '__main__':
     app.run(debug=True, port=5002)
