@@ -20,7 +20,7 @@ class Movie(db.Model):
     name = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(500))
     year = db.Column(db.Integer)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id', ondelete='SET NULL'), nullable=True)
     category = db.relationship('Category', backref=db.backref('movies', lazy='dynamic'))
     image = db.Column(db.String(255))
     video = db.Column(db.String(255))
@@ -32,14 +32,11 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(60), unique=True, nullable=False)
     password_hash = db.Column(db.String, nullable=False)
-    
-    # ВСТАВЛЯЕМ ЭТУ СТРОКУ СЮДА:
-    is_admin = db.Column(db.Boolean, default=False, nullable=True)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
 
     @property
     def password(self):
         return self.password_hash
-    # ... (дальше ваш код остается без изменений)
 
     @password.setter
     def password(self, new_password):

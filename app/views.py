@@ -172,7 +172,7 @@ def admin_movie_create():
                 name=form.name.data,
                 description=form.description.data,
                 year=form.year.data,
-                category_id=form.category_id.data,
+                category_id=form.category_id.data if form.category_id.data else None,
                 image=f'movie_files/{slug}/{image_name}',
                 video=form.video.data  # это iframe-код
             )
