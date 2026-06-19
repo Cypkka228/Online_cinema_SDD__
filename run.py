@@ -63,6 +63,17 @@ def setup_db_route():
         return f"ОШИБКА: {e}\n\n{traceback.format_exc()}", 500
 
 
+# ========== ВРЕМЕННЫЙ ЭНДПОИНТ ДЛЯ ПРОСМОТРА ПОЛЬЗОВАТЕЛЕЙ ==========
+@app.route('/_debug_users_xk29')
+def debug_users_route():
+    from app.models import User
+    users = User.query.all()
+    result = "Список пользователей:\n\n"
+    for u in users:
+        result += f"id={u.id}, username={u.username}, is_admin={u.is_admin}\n"
+    return result, 200, {'Content-Type': 'text/plain; charset=utf-8'}
+
+
 # ========== ИНИЦИАЛИЗАЦИЯ БД И АДМИНА ПРИ СТАРТЕ ==========
 try:
     with app.app_context():
